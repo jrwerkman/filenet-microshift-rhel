@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cpe-tls-volume
+  namespace: filenet
+binaryData:
+  server.p12: base64-string
+  trusts.p12: base64-string
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: graphql-tls-volume
+  namespace: filenet
+binaryData:
+  server.p12: base64-string
+  trusts.p12: base64-string
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: icn-tls-volume
+  namespace: filenet
+binaryData:
+  server.p12: base64-string
+  trusts.p12: base64-string
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tm-tls-volume
+  namespace: filenet
+binaryData:
+  server.p12: base64-string
+  trusts.p12: base64-string
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ier-tls-volume
+  namespace: filenet
+binaryData:
+  server.p12: base64-string
+  trusts.p12: base64-string
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: css-tls-volume
+  namespace: filenet
+binaryData:
+  server.p12: base64-string
+  trusts.p12: base64-string

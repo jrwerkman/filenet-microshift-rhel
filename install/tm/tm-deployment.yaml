@@ -1,0 +1,162 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tm
+  namespace: filenet
+  labels:
+    app: tm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tm
+  template:
+    metadata:
+      labels:
+        app: tm
+    spec:
+      imagePullSecrets:
+        - name: ibm-entitlement-key    
+        
+      serviceAccountName: default 
+      
+      containers:
+      - name: tm
+        image: cp.icr.io/cp/cp4a/fncm/taskmgr:ga-320-tm
+        imagePullPolicy: "IfNotPresent"
+
+        ports:
+        - containerPort: 9080
+          name: http
+        - containerPort: 9443
+          name: https
+
+        securityContext:
+          capabilities:
+            drop: ["ALL"]
+          privileged: false
+          runAsUser: 1000140000
+          runAsNonRoot: true
+          readOnlyRootFilesystem: false
+          allowPrivilegeEscalation: false
+          seccompProfile:
+            type: RuntimeDefault
+        
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+            ephemeral-storage: "2Gi"
+          limits:
+            memory: "1536Mi"
+            cpu: "1"
+            ephemeral-storage: "2Gi"
+
+        env:
+        - name: LICENSE
+          value: accept
+        - name: LICENSEMODEL
+          value: FNCM.PVUNonProd
+        - name: PRODUCT
+          value: "NON_PROD"
+        - name: TZ
+          value: Europe/Amsterdam
+        - name: LOG_FORMAT
+          value: json
+        - name: disableFIPS
+          value: "true"
+        - name: ENV_PROP_FILE
+          value: /opt/ibm/wlp/usr/servers/defaultServer/resources/security/environment.properties
+
+        - name: JVM_INITIAL_HEAP_PERCENTAGE
+          value: '18'
+        - name: JVM_MAX_HEAP_PERCENTAGE
+          value: '33'
+        - name: JVM_CUSTOMIZE_OPTIONS
+          value: '-Dcom.ibm.ecm.task.StartUpListener.defaultLogLevel=FINE,-Dcom.ibm.ecm.task.StartUpListener.enableHeartBeatMonitoring=false,-Dcom.ibm.ecm.task.StartUpListener.mailSessionJNDI=mail/CNMailSession,-Dcom.ibm.ecm.task.StartUpListener.persistenceUnit=ECMTaskManagerTask,-Dcom.ibm.ecm.task.StartUpListener.icnConfigDirPath=/opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides'          
+        - name: DISABLE_BASIC_AUTH
+          value: 'true'
+
+        - name: CE_URL
+          value: "http://cpe-svc.filenet.svc.cluster.local:9080/wsi/FNCEWS40MTOM"
+        - name: ICNDBTYPE
+          value: "postgresql"
+        - name: ICNJNDIDS
+          value: "ECMClientDS"
+        - name: ICNSCHEMA
+          value: "icn_db_schema"
+        - name: ICNTS
+          value: "icn_db_ts"
+        - name: TM_JOB_URL
+          value: "http://ier-svc.filenet.svc.cluster.local:9080/EnterpriseRecordsPlugin/IERApplicationPlugin.jar"
+        - name: ZEN_ENABLED
+          value: 'false'
+              
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+
+        volumeMounts:
+        - name: tm-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/logs
+          subPath: logs
+        - name: tm-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides
+          subPath: configDropins/overrides
+        - name: tm-volume
+          mountPath: /opt/ibm/extTM
+          subPath: pluginstore
+          
+        - name: tls-volume
+          mountPath: /shared/tls/pkcs12
+
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_ldap_custom_default1.xml
+          subPath: ibm_ldap_custom_default1.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_ldap_federated.xml
+          subPath: ibm_ldap_federated.xml
+
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/resources/security/environment.properties
+          subPath: environment_icn.properties
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/PostgreSQLJDBCDriver.xml
+          subPath: PostgreSQLJDBCDriver.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_ICNDS.xml
+          subPath: ibm_ICNDS.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_TMDS.xml
+          subPath: ibm_TMDS.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_CORS.xml
+          subPath: ibm_CORS.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_custom-ssl.xml
+          subPath: ibm_custom-ssl.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/http-session.xml
+          subPath: http-session.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_custom-ltpa.xml
+          subPath: ibm_custom-ltpa.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/resources/security/custom-ltpa.keys
+          subPath: custom-ltpa.keys
+        - name: config-volume
+          subPath: ibm_TM_liberty.xml
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/defaults/ibm_TM_liberty.xml
+
+      volumes:
+      - name: tm-volume
+        persistentVolumeClaim:
+          claimName: tm-pvc
+      - name: config-volume
+        configMap:
+          name: filenet-config
+      - name: tls-volume
+        configMap:
+          name: tm-tls-volume   

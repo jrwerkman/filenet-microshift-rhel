@@ -1,0 +1,180 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: icn
+  namespace: filenet
+  labels:
+    app: icn
+spec:
+  replicas: 1 # Start with 1 replica for initial setup
+  selector:
+    matchLabels:
+      app: icn
+  template:
+    metadata:
+      labels:
+        app: icn
+    spec:
+      imagePullSecrets:
+        - name: ibm-entitlement-key    
+        
+      serviceAccountName: default 
+
+      containers:
+      - name: icn
+        image: cp.icr.io/cp/cp4a/ban/navigator:ga-320-icn
+        imagePullPolicy: "IfNotPresent"
+
+        ports:
+        - containerPort: 9080
+          name: http
+        - containerPort: 9443
+          name: https
+
+        securityContext:
+          capabilities:
+            drop: ["ALL"]
+          privileged: false
+          runAsUser: 1000140000
+          runAsNonRoot: true
+          readOnlyRootFilesystem: false
+          allowPrivilegeEscalation: false
+          seccompProfile:
+            type: RuntimeDefault
+        
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+            ephemeral-storage: "2Gi"
+          limits:
+            memory: "1536Mi"
+            cpu: "1"
+            ephemeral-storage: "2Gi"
+
+        env:
+        - name: LICENSE
+          value: accept
+        - name: LICENSEMODEL
+          value: FNCM.PVUNonProd
+        - name: PRODUCT
+          value: "NON_PROD"
+        - name: TZ
+          value: Europe/Amsterdam
+        - name: LOG_FORMAT
+          value: json
+        - name: GDFONTPATH
+          value: /opt/ibm/java/lib/fonts
+        - name: ENV_PROP_FILE
+          value: /opt/ibm/wlp/usr/servers/defaultServer/resources/security/environment.properties
+
+        - name: JVM_INITIAL_HEAP_PERCENTAGE
+          value: '18'
+        - name: JVM_MAX_HEAP_PERCENTAGE
+          value: '33'
+        - name: JVM_CUSTOMIZE_OPTIONS
+          value: "-Dcom.ibm.ws.session.cookie.secure=false -Dcom.filenet.authentication.wsi.AutoDetectAuthToken=true -Dcom.filenet.repositoryconfig.allowWSIOnWAS=true"
+        - name: DISABLE_BASIC_AUTH
+          value: 'true'
+
+        - name: ICNDBTYPE
+          value: "postgresql"
+        - name: ICNJNDIDS
+          value: "ECMClientDS"
+        - name: ICNSCHEMA
+          value: "icn_db_schema"
+        - name: ICNTS
+          value: "icn_db_ts"
+        - name: navigatorMode
+          value: '0'
+
+        - name: enableAppcues
+          value: "false"
+        - name: allowRemotePluginsViaHttp
+          value: "true"
+        - name: disableFIPS
+          value: "true"
+
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+
+        volumeMounts:
+        - name: icn-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/logs
+          subPath: logs
+        - name: icn-volume
+          mountPath: /opt/ibm/plugins
+          subPath: plugins
+        - name: icn-volume
+          mountPath: /opt/ibm/viewerconfig/cache
+          subPath: viewerconfig/cache
+        - name: icn-volume
+          mountPath: /opt/ibm/viewerconfig/logs
+          subPath: viewerconfig/logs
+        - name: icn-volume
+          mountPath: /opt/ibm/Aspera
+          subPath: aspera
+        - name: icn-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides
+          subPath: configDropins/overrides
+        - name: icn-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ier-jars
+          subPath: configDropins/overrides/ier-jars
+        
+        - name: tls-volume
+          mountPath: /shared/tls/pkcs12
+
+        # config volumes
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_ldap_custom_default1.xml
+          subPath: ibm_ldap_custom_default1.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_ldap_federated.xml
+          subPath: ibm_ldap_federated.xml
+
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/PostgreSQLJDBCDriver.xml
+          subPath: PostgreSQLJDBCDriver.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/http-session.xml
+          subPath: http-session.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ier-library.xml
+          subPath: ier-library.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_CORS.xml
+          subPath: ibm_CORS.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/resources/security/environment.properties
+          subPath: environment_icn.properties
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_custom-ssl.xml
+          subPath: ibm_custom-ssl.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_custom-ltpa.xml
+          subPath: ibm_custom-ltpa.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/resources/security/custom-ltpa.keys
+          subPath: custom-ltpa.keys
+
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_ICNDS.xml
+          subPath: ibm_ICNDS.xml
+        # for mail config, enable and edit ibm_icn_mail.xml in configmap
+        #- name: config-volume
+        #  mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_icn_mail.xml
+        #  subPath: ibm_icn_mail.xml
+
+      volumes:
+      - name: icn-volume
+        persistentVolumeClaim:
+          claimName: icn-pvc
+      - name: config-volume
+        configMap:
+          name: filenet-config
+      - name: tls-volume
+        configMap:
+          name: icn-tls-volume    

@@ -1,0 +1,406 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: cpe-acce-route
+  namespace: filenet
+  annotations:
+    haproxy.router.openshift.io/balance: source
+    haproxy.router.openshift.io/timeout: 300s
+    #router.openshift.io/cookie_name: "filenet-session"
+    #haproxy.router.openshift.io/disable_cookies: "false"
+spec:
+  to:
+    kind: Service
+    name: cpe-svc
+    weight: 100
+  wildcardPolicy: None
+  port:
+    targetPort: 9443
+  host: rhel-microshift.local
+  path: /acce
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: reencrypt
+    certificate: |
+      <<route-cert>>
+    key: |
+      <<route-key>>
+    caCertificate: |
+      <<ca-cert>>
+    destinationCACertificate: |
+      <<ca-cert>>
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: cpe-filenet-route
+  namespace: filenet
+  annotations:
+    haproxy.router.openshift.io/balance: source
+    haproxy.router.openshift.io/timeout: 300s
+    #router.openshift.io/cookie_name: "filenet-session"
+    #haproxy.router.openshift.io/disable_cookies: "false"
+spec:
+  to:
+    kind: Service
+    name: cpe-svc
+    weight: 100
+  wildcardPolicy: None
+  port:
+    targetPort: 9443
+  host: rhel-microshift.local
+  path: /FileNet
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: reencrypt
+    certificate: |
+      <<route-cert>>
+    key: |
+      <<route-key>>
+    caCertificate: |
+      <<ca-cert>>
+    destinationCACertificate: |
+      <<ca-cert>>
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: cpe-wsi-route
+  namespace: filenet
+  annotations:
+    haproxy.router.openshift.io/balance: source
+    haproxy.router.openshift.io/timeout: 300s
+    #router.openshift.io/cookie_name: "filenet-session"
+    #haproxy.router.openshift.io/disable_cookies: "false"
+spec:
+  to:
+    kind: Service
+    name: cpe-svc
+    weight: 100
+  wildcardPolicy: None
+  port:
+    targetPort: 9443
+  host: rhel-microshift.local
+  path: /wsi
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: reencrypt
+    certificate: |
+    certificate: |
+      <<route-cert>>
+    key: |
+      <<route-key>>
+    caCertificate: |
+      <<ca-cert>>
+    destinationCACertificate: |
+      <<ca-cert>>
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: cpe-p8ce-route
+  namespace: filenet
+  annotations:
+    haproxy.router.openshift.io/balance: source
+    haproxy.router.openshift.io/timeout: 300s
+    #router.openshift.io/cookie_name: "filenet-session"
+    #haproxy.router.openshift.io/disable_cookies: "false"
+spec:
+  to:
+    kind: Service
+    name: cpe-svc
+    weight: 100
+  wildcardPolicy: None
+  port:
+    targetPort: 9443
+  host: rhel-microshift.local
+  path: /P8CE
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: reencrypt
+    certificate: |
+      <<route-cert>>
+    key: |
+      <<route-key>>
+    caCertificate: |
+      <<ca-cert>>
+    destinationCACertificate: |
+      <<ca-cert>>
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: cpe-pewsi-route
+  namespace: filenet
+  annotations:
+    haproxy.router.openshift.io/balance: source
+    haproxy.router.openshift.io/timeout: 300s
+    #router.openshift.io/cookie_name: "filenet-session"
+    #haproxy.router.openshift.io/disable_cookies: "false"
+spec:
+  to:
+    kind: Service
+    name: cpe-svc
+    weight: 100
+  wildcardPolicy: None
+  port:
+    targetPort: 9443
+  host: rhel-microshift.local
+  path: /pewsi
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: reencrypt
+    certificate: |
+      <<route-cert>>
+    key: |
+      <<route-key>>
+    caCertificate: |
+      <<ca-cert>>
+    destinationCACertificate: |
+      <<ca-cert>>
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: cpe-peengine-route
+  namespace: filenet
+  annotations:
+    haproxy.router.openshift.io/balance: source
+    haproxy.router.openshift.io/timeout: 300s
+    #router.openshift.io/cookie_name: "filenet-session"
+    #haproxy.router.openshift.io/disable_cookies: "false"
+spec:
+  to:
+    kind: Service
+    name: cpe-svc
+    weight: 100
+  wildcardPolicy: None
+  port:
+    targetPort: 9443
+  host: rhel-microshift.local
+  path: /peengine
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: reencrypt
+    certificate: |
+      <<route-cert>>
+    key: |
+      <<route-key>>
+    caCertificate: |
+      <<ca-cert>>
+    destinationCACertificate: |
+      <<ca-cert>>
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: cpe-client-download-route
+  namespace: filenet
+  annotations:
+    haproxy.router.openshift.io/balance: source
+    haproxy.router.openshift.io/timeout: 300s
+    #router.openshift.io/cookie_name: "filenet-session"
+    #haproxy.router.openshift.io/disable_cookies: "false"
+spec:
+  to:
+    kind: Service
+    name: cpe-svc
+    weight: 100
+  wildcardPolicy: None
+  port:
+    targetPort: 9443
+  host: rhel-microshift.local
+  path: /clientDownload
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: reencrypt
+    certificate: |
+      <<route-cert>>
+    key: |
+      <<route-key>>
+    caCertificate: |
+      <<ca-cert>>
+    destinationCACertificate: |
+      <<ca-cert>>
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: cpe-wscpeservice-route
+  namespace: filenet
+  annotations:
+    haproxy.router.openshift.io/balance: source
+    haproxy.router.openshift.io/timeout: 300s
+    #router.openshift.io/cookie_name: "filenet-session"
+    #haproxy.router.openshift.io/disable_cookies: "false"
+spec:
+  to:
+    kind: Service
+    name: cpe-svc
+    weight: 100
+  wildcardPolicy: None
+  port:
+    targetPort: 9443
+  host: rhel-microshift.local
+  path: /WSCPEService
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: reencrypt
+    certificate: |
+      <<route-cert>>
+    key: |
+      <<route-key>>
+    caCertificate: |
+      <<ca-cert>>
+    destinationCACertificate: |
+      <<ca-cert>>
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: icn-sync-route
+  namespace: filenet
+  annotations:
+    haproxy.router.openshift.io/balance: source
+    haproxy.router.openshift.io/timeout: 300s
+    #router.openshift.io/cookie_name: "filenet-session"
+    #haproxy.router.openshift.io/disable_cookies: "false"
+spec:
+  to:
+    kind: Service
+    name: icn-svc
+    weight: 100
+  wildcardPolicy: None
+  port:
+    targetPort: 9443
+  host: rhel-microshift.local
+  path: /sync
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: reencrypt
+    certificate: |
+      <<route-cert>>
+    key: |
+      <<route-key>>
+    caCertificate: |
+      <<ca-cert>>
+    destinationCACertificate: |
+      <<ca-cert>>
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: icn-navigator-route
+  namespace: filenet
+  annotations:
+    haproxy.router.openshift.io/balance: source
+    haproxy.router.openshift.io/timeout: 300s
+    #router.openshift.io/cookie_name: "filenet-session"
+    #haproxy.router.openshift.io/disable_cookies: "false"
+spec:
+  to:
+    kind: Service
+    name: icn-svc
+    weight: 100
+  wildcardPolicy: None
+  port:
+    targetPort: 9443
+  host: rhel-microshift.local
+  path: /navigator
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: reencrypt
+    certificate: |
+      <<route-cert>>
+    key: |
+      <<route-key>>
+    caCertificate: |
+      <<ca-cert>>
+    destinationCACertificate: |
+      <<ca-cert>>
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: graphql-route
+  namespace: filenet
+  annotations:
+    haproxy.router.openshift.io/balance: source
+    #router.openshift.io/cookie_name: "filenet-session"
+    #haproxy.router.openshift.io/disable_cookies: "false"
+spec:
+  to:
+    kind: Service
+    name: graphql-svc
+    weight: 100
+  wildcardPolicy: None
+  port:
+    targetPort: 9443
+  host: rhel-microshift.local
+  path: /content-services-graphql
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: reencrypt
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: ier-route
+  namespace: filenet
+  annotations:
+    haproxy.router.openshift.io/balance: source
+    haproxy.router.openshift.io/timeout: 300s
+    #router.openshift.io/cookie_name: "filenet-session"
+    #haproxy.router.openshift.io/disable_cookies: "false"
+spec:
+  to:
+    kind: Service
+    name: ier-svc
+    weight: 100
+  wildcardPolicy: None
+  port:
+    targetPort: 9443
+  host: rhel-microshift.local
+  path: /EnterpriseRecordsPlugin
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: reencrypt
+    certificate: |
+      <<route-cert>>
+    key: |
+      <<route-key>>
+    caCertificate: |
+      <<ca-cert>>
+    destinationCACertificate: |
+      <<ca-cert>>
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: tm-route
+  namespace: filenet
+  annotations:
+    haproxy.router.openshift.io/balance: source
+    #router.openshift.io/cookie_name: "filenet-session"
+    #haproxy.router.openshift.io/disable_cookies: "false"
+spec:
+  to:
+    kind: Service
+    name: tm-svc
+    weight: 100
+  wildcardPolicy: None
+  port:
+    targetPort: 9443
+  host: rhel-microshift.local
+  path: /taskManagerWeb
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: reencrypt
+    certificate: |
+      <<route-cert>>
+    key: |
+      <<route-key>>
+    caCertificate: |
+      <<ca-cert>>
+    destinationCACertificate: |
+      <<ca-cert>>

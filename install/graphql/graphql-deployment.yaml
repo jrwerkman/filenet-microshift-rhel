@@ -1,0 +1,136 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graphql
+  namespace: filenet
+  labels:
+    app: graphql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: graphql
+  template:
+    metadata:
+      labels:
+        app: graphql    
+    spec:
+      imagePullSecrets:
+        - name: ibm-entitlement-key    
+        
+      serviceAccountName: default 
+      
+      containers:
+      - name: cpe
+        image: cp.icr.io/cp/cp4a/fncm/graphql:ga-570-p8cgql
+        imagePullPolicy: "IfNotPresent"
+
+        ports:
+        - containerPort: 9080
+          name: http
+        - containerPort: 9443
+          name: https
+
+        securityContext:
+          capabilities:
+            drop: ["ALL"]
+          privileged: false
+          runAsUser: 1000140000
+          runAsNonRoot: true
+          readOnlyRootFilesystem: false
+          allowPrivilegeEscalation: false
+          seccompProfile:
+            type: RuntimeDefault
+        
+        env:
+        - name: LICENSE
+          value: accept
+        - name: PRODUCT
+          value: "NON_PROD"
+        - name: LICENSEMODEL
+          value: FNCM.PVUNonProd
+        - name: TZ
+          value: Europe/Amsterdam
+        - name: LOG_FORMAT
+          value: json
+
+        - name: disableFIPS
+          value: "true"
+        - name: CPESTATICPORT
+          value: "false"
+        - name: CONTAINERTYPE
+          value: "1"          
+        - name: JVM_INITIAL_HEAP_PERCENTAGE
+          value: '18'
+        - name: JVM_MAX_HEAP_PERCENTAGE
+          value: '33'
+        - name: JVM_CUSTOMIZE_OPTIONS
+          value: "-Dcom.ibm.ws.session.cookie.secure=false -Dcom.filenet.authentication.wsi.AutoDetectAuthToken=true"
+        - name: DISABLE_BASIC_AUTH
+          value: 'true'
+
+        - name: CPE_URI
+          value: http://cpe-svc.filenet.svc.cluster.local:9080/wsi/FNCEWS40MTOM
+        - name: ENABLE_GRAPHIQL
+          value: "true"
+        - name: GRAPHQL_CONTEXT_ROOT
+        
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+          
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+            ephemeral-storage: "2Gi"
+          limits:
+            memory: "1536Mi"
+            cpu: "1"
+            ephemeral-storage: "2Gi"
+
+        volumeMounts:
+        - name: graphql-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/logs
+          subPath: logs
+        - name: graphql-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides
+          subPath: configDropins/overrides
+
+        - name: tls-volume
+          mountPath: /shared/tls/pkcs12
+          
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_ldap_custom_default1.xml
+          subPath: ibm_ldap_custom_default1.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_ldap_federated.xml
+          subPath: ibm_ldap_federated.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/http-session.xml
+          subPath: http-session.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_CORS.xml
+          subPath: ibm_CORS.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_custom-ssl.xml
+          subPath: ibm_custom-ssl.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_custom-ltpa.xml
+          subPath: ibm_custom-ltpa.xml
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/resources/security/custom-ltpa.keys
+          subPath: custom-ltpa.keys
+
+      volumes:
+      - name: graphql-volume
+        persistentVolumeClaim:
+          claimName: graphql-pvc
+      - name: config-volume
+        configMap:
+          name: filenet-config
+      - name: tls-volume
+        configMap:
+          name: graphql-tls-volume  

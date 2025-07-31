@@ -1,0 +1,283 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filenet-config
+  namespace: filenet
+data:
+  ibm_custom-ssl.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <server>
+        <sslDefault sslRef="cssSSLSettings"/>
+        <ssl id="cssSSLSettings"
+            keyStoreRef="defaultKeyStore"
+            trustStoreRef="defaultTrustStore"
+            sslProtocol="TLSv1.2,TLSv1.3"
+            enabledCiphers="TLS_AES_256_GCM_SHA384 TLS_CHACHA20_POLY1305_SHA256 TLS_AES_128_GCM_SHA256 TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384 TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+            />
+        <keyStore id="defaultKeyStore"
+            location="/shared/tls/pkcs12/server.p12"
+            type="PKCS12" 
+            password="{xor}Dz4sLCgwLTtu" />
+        <keyStore id="defaultTrustStore"
+            location="/shared/tls/pkcs12/trusts.p12"
+            type="PKCS12" 
+            password="{xor}Dz4sLCgwLTtu" />
+    </server>
+    
+  ibm_ldap_custom_default1.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <server>
+      <ldapRegistry id="defaultldap1" realm="defaultldap1Realm"
+        host="ldap-svc.infra.svc.cluster.local"
+        baseDN="dc=demodom,dc=nl"
+        port="9389"
+        ldapType="IBM Tivoli Directory Server"
+        bindDN="cn=bindldap,ou=dev,dc=demodom,dc=nl"
+        sslEnabled="false"
+        bindPassword="{xor}Dz4sLCgwLTtu">
+        <idsFilters
+          userFilter="(&amp;(uid=%v)(objectclass=person))"
+          groupFilter="(&amp;(cn=%v)(|(objectclass=groupofnames)(objectclass=groupofuniquenames)(objectclass=groupofurls)))"
+          userIdMap="*:uid"
+          groupIdMap="*:cn"
+          groupMemberIdMap="groupofnames:member">
+        </idsFilters>        
+      </ldapRegistry>
+    </server>
+
+  ibm_ldap_federated.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <server>
+      <federatedRepository>
+        <primaryRealm name="defaultldap1Realm" allowOpIfRepoDown="true">
+          <participatingBaseEntry name="dc=demodom,dc=nl"/>
+        </primaryRealm>
+      </federatedRepository>
+    </server>
+
+  PostgreSQLJDBCDriver.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <server>
+      <library id="PostgreSQLJDBC">
+        <fileset dir="/shared/resources/jdbc/postgresql" includes="postgresql-*.jar" />
+      </library>
+    </server>  
+    
+  ibm_GCD.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <server>
+        <dataSource id="FNGCDDS" jndiName="FNGCDDS" validationTimeout="15" isolationLevel="TRANSACTION_READ_COMMITTED" type="javax.sql.DataSource">
+            <jdbcDriver libraryRef="PostgreSQLJDBC"/>
+            <properties.postgresql serverName="postgres-svc.infra.svc.cluster.local" portNumber="5432" databaseName="fn_gcd_db" user="fn_gcd_user" password="{xor}Dz4sLCgwLTtu" ssl="false"/>
+            <connectionManager enableSharingForDirectLookups="false" minPoolSize="0" maxPoolSize="50" maxIdleTime="1m" reapTime="2m" agedTimeout="3m"/>
+        </dataSource>
+        <dataSource id="FNGCDDSXA" jndiName="FNGCDDSXA" validationTimeout="15" isolationLevel="TRANSACTION_READ_COMMITTED" type="javax.sql.XADataSource" supplementalJDBCTrace="true">
+            <jdbcDriver libraryRef="PostgreSQLJDBC"/>
+            <properties.postgresql serverName="postgres-svc.infra.svc.cluster.local" portNumber="5432" databaseName="fn_gcd_db" user="fn_gcd_user" password="{xor}Dz4sLCgwLTtu" ssl="false"/>
+            <connectionManager enableSharingForDirectLookups="true" minPoolSize="0" maxPoolSize="50" maxIdleTime="1m" reapTime="2m" agedTimeout="3m"/>
+        </dataSource>
+    </server>
+  
+  ibm_OS1.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <server>
+      <dataSource id="FNOSDS" jndiName="FNOSDS" validationTimeout="15" isolationLevel="TRANSACTION_READ_COMMITTED">
+        <jdbcDriver libraryRef="PostgreSQLJDBC"/>
+        <properties.postgresql serverName="postgres-svc.infra.svc.cluster.local" portNumber="5432" databaseName="fn_os_db" user="fn_os_user" password="{xor}Dz4sLCgwLTtu" ssl="false"/>
+        <connectionManager enableSharingForDirectLookups="false" minPoolSize="0" maxPoolSize="50" maxIdleTime="1m" reapTime="2m" agedTimeout="3m"/>
+      </dataSource>
+      <dataSource id="FNOSDSXA" jndiName="FNOSDSXA" validationTimeout="15" isolationLevel="TRANSACTION_READ_COMMITTED" type="javax.sql.XADataSource" supplementalJDBCTrace="true">
+        <jdbcDriver libraryRef="PostgreSQLJDBC"/>
+        <properties.postgresql serverName="postgres-svc.infra.svc.cluster.local" portNumber="5432" databaseName="fn_os_db" user="fn_os_user" password="{xor}Dz4sLCgwLTtu" ssl="false"/>
+        <connectionManager enableSharingForDirectLookups="true" minPoolSize="0" maxPoolSize="50" maxIdleTime="1m" reapTime="2m" agedTimeout="3m"/>
+      </dataSource>
+    </server>
+  
+  ibm_OS2.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <server>
+      <dataSource id="FNFPOSDS" jndiName="FNFPOSDS" validationTimeout="15" isolationLevel="TRANSACTION_READ_COMMITTED">
+        <jdbcDriver libraryRef="PostgreSQLJDBC"/>
+        <properties.postgresql serverName="postgres-svc.infra.svc.cluster.local" portNumber="5432" databaseName="fn_fpos_db" user="fn_fpos_user" password="{xor}Dz4sLCgwLTtu" ssl="false"/>
+        <connectionManager enableSharingForDirectLookups="false" minPoolSize="0" maxPoolSize="50" maxIdleTime="1m" reapTime="2m" agedTimeout="3m"/>
+      </dataSource>
+      <dataSource id="FNFPOSDSXA" jndiName="FNFPOSDSXA" validationTimeout="15" isolationLevel="TRANSACTION_READ_COMMITTED" type="javax.sql.XADataSource" supplementalJDBCTrace="true">
+        <jdbcDriver libraryRef="PostgreSQLJDBC"/>
+        <properties.postgresql serverName="postgres-svc.infra.svc.cluster.local" portNumber="5432" databaseName="fn_fpos_db" user="fn_fpos_user" password="{xor}Dz4sLCgwLTtu" ssl="false"/>
+        <connectionManager enableSharingForDirectLookups="true" minPoolSize="0" maxPoolSize="50" maxIdleTime="1m" reapTime="2m" agedTimeout="3m"/>
+      </dataSource>
+    </server>  
+    
+  ibm_wsatomic.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <server>
+      <httpEndpoint id="wsatHttpEndpoint" host="*" httpsPort="9444" httpPort="9081" protocolVersion="http/1.1">
+          <httpOptions PurgeDataDuringClose="true" />
+      </httpEndpoint>
+      <wsAtomicTransaction SSLEnabled="true" SSLRef="cssSSLSettings" externalURLPrefix="https://${env.POD_IP}:9444" />
+      <virtualHost id="default_host">
+          <hostAlias>*:443</hostAlias>
+          <hostAlias>*:9443</hostAlias>
+          <hostAlias>*:9444</hostAlias>
+          <hostAlias>*:9080</hostAlias>
+          <hostAlias>*:9081</hostAlias>
+      </virtualHost>
+    </server>  
+    
+  environment.properties: |
+  
+  environment_icn.properties: |
+    ICNADMIN=p8admin
+
+  ibm_custom-ltpa.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <server>
+        <ltpa 
+            keysFileName="${server.config.dir}/resources/security/custom-ltpa.keys" 
+            keysPassword="{xor}Dz4sLCgwLTtu" 
+            realm="defaultldap1Realm" 
+            expiration="120m" />
+    </server>  
+
+  # not best way to do this, but for dev it is fine
+  custom-ltpa.keys: |
+    #Wed Jun 25 05:42:33 CEST 2025
+    com.ibm.websphere.CreationDate=Wed Jun 25 05\:42\:33 CEST 2025
+    com.ibm.websphere.CreationHost=localhost
+    com.ibm.websphere.ltpa.3DESKey=Bms6ULbxVu+GeUlHua3GyZNYnh9iehiVfAwEtKnDBFw\=
+    com.ibm.websphere.ltpa.PrivateKey=EHJDUf/xpsC31kg0ijfPl5m/kelEOJ9uzu/3zyMUjnlBXU4X0oY/KHxnkfOYnwlWKKuDJlKA41acg59VUYJwMJQMcuDJfNTlqLFfVivbQcxokzDOqxTrbbRP4gBr8Du2kZKQoqib2htD5J4VgY3bU9O01Ssc2ZScHiMZWfC42Oyx65YZHGqQSxMSDI4VlF2WWYp2IWhcLeJOhu/GDNPc8VbxrTO1TejWmVnTtkfxANlv9vn+3dDkOfaTpmRy+zzw6KpReUCscQgOylBMA0X76Kdv3JEGKRcJGCS2bnjb6bnmGBGiVCOuhzSsXQ/bzbdLpTcp1htcLDO2Dwaim7km9WraNVlwZ48Dlc5XPto/DS8\=
+    com.ibm.websphere.ltpa.PublicKey=AMJpYeSavFgbpBBv8QfC9Xe9mxYmivrLbQZJ6mtSipYjIVVxDl20cZOQFZBSFAuG4rEsqFZ5vqVPxqLMXTa3tSLBAPbVWTRqM33kXjLrWL3iiCeYmhp4WS8+/rTtPbQ0Lt6JGjZKkpws1M16fK1zQ27YSUmGyjISTmg5yzQ2PBzjAQAB
+    com.ibm.websphere.ltpa.Realm=defaultldap1Realm
+    com.ibm.websphere.ltpa.version=1.0
+
+  http-session.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <server>
+        <httpSession 
+            invalidationTimeout="120m"
+            cloneId="the-session"
+            idReuse="true" />
+            
+        <webAppSecurity 
+            ssoDomainNames="rhel-microshift.local|filenet.svc.cluster.local|svc.cluster.local" 
+            preserveFullyQualifiedReferrerUrl="true" />
+    </server>  
+        
+  ibm_ICNDS.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <server>
+        <dataSource id="ECMClientDS" jndiName="ECMClientDS" validationTimeout="15" isolationLevel="TRANSACTION_READ_COMMITTED" type="javax.sql.DataSource">
+            <jdbcDriver libraryRef="PostgreSQLJDBC"/>
+            <properties.postgresql 
+                serverName="postgres-svc.infra.svc.cluster.local" 
+                portNumber="5432" 
+                databaseName="icn_db" 
+                user="icn_user" 
+                password="{xor}Dz4sLCgwLTtu" 
+                resultSetHoldability="HOLD_CURSORS_OVER_COMMIT"
+                ssl="false" />
+            <connectionManager enableSharingForDirectLookups="true" minPoolSize="0" maxPoolSize="50" maxIdleTime="1m" reapTime="2m" agedTimeout="3m"/>
+        </dataSource>
+    </server>
+
+  ibm_icn_mail.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <server>
+      <mailSession mailSessionID="CNMailSession"
+        jndiName="mail/CNMailSession"
+        description="ICN Mail Session"
+        transportProtocol="smtp"
+        host=""
+        user="" 
+        password=""
+        from="" >
+        <property name="mail.smtp.port" value="25" />
+        <property name="mail.smtp.auth" value="true" />
+        <property name="mail.smtp.ssl.enable" value="true" />
+      </mailSession>
+    </server>    
+
+  ibm_CORS.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <server>
+      <cors domain="/contentapi/rest/share/v1"
+            allowedOrigins="*"
+            allowedMethods="GET, DELETE, PUT, POST, OPTIONS"
+            allowedHeaders="Connection,Pragma,Cache-Control,Navigator-Client-Build,XSRFtoken,ECM-XSRF-Token,Origin,User-Agent,Content-Type,Content-Length,Navigator-Client-Identity,Accept-Control-Request-Method,Accept-Control-Request-Headers,Accept,Referer,Accept-Encoding,Accept-Language,DNT,Host,Cache-control,Cookie,auth-token-realm,Authorization,Sec-Fetch-Site,Sec-Fetch-Mode"
+            exposeHeaders="Content-Length,Content_Type,Content-Language,X-Powered-By,Date,Allow,Transfer-Encoding,$WSEP,DNT,Access-Control-Allow-Credentials,Access-Control-Allow-Headers,Access-Control-Allow-Max-Age,Access-Control-Allow-Methods,Access-Control-Allow-Origin,Access-Control-Expose-Headers,Connection,Cache-control,Cookie,Expires,Pragma,Set-Cookie"
+                
+            maxAge="86400" />
+    </server>
+    
+  ibm_LibertyDS.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <server>
+      <dataSource id="DefaultDataSource" jndiName="ECMClientDS" validationTimeout="15" isolationLevel="TRANSACTION_READ_COMMITTED"  type="javax.sql.DataSource">
+        <jdbcDriver libraryRef="PostgreSQLJDBC"/>
+          <properties.postgresql
+                serverName="postgres-svc.infra.svc.cluster.local" 
+                portNumber="5432" 
+                databaseName="icn_db" 
+                user="icn_user" 
+                password="{xor}Dz4sLCgwLTtu" 
+                resultSetHoldability="HOLD_CURSORS_OVER_COMMIT"
+                ssl="false" />
+      </dataSource>
+    </server>
+
+  ibm_TMDS.xml: |-
+    <?xml version="1.0" encoding="UTF-8"?>
+    <server>
+      <dataSource id="ECMTaskManagerDS" jndiName="ECMTaskManagerDS" validationTimeout="15" isolationLevel="TRANSACTION_READ_COMMITTED"  type="javax.sql.DataSource">
+        <jdbcDriver libraryRef="PostgreSQLJDBC"/>
+          <properties.postgresql
+                serverName="postgres-svc.infra.svc.cluster.local" 
+                portNumber="5432" 
+                databaseName="icn_db" 
+                user="icn_user" 
+                password="{xor}Dz4sLCgwLTtu" 
+                resultSetHoldability="HOLD_CURSORS_OVER_COMMIT"
+                ssl="false" />
+      </dataSource>
+    </server>
+
+  ibm_TM_liberty.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <server>
+      <library id="ecmTaskManagerLib">
+        <fileset dir="${server.config.dir}/lib" includes="*.jar" scanInterval="5s" />
+        <folder dir="/opt/ibm/orm" />
+        <folder dir="/opt/ibm/ecm" />
+      </library>
+      <application type="war"
+        contextRoot="taskManagerWeb"
+        id="taskManagerWeb"
+        location="${server.config.dir}/apps/taskManagerWeb.war"
+        name="taskManagerWeb">
+        <classloader id="taskManagerWebClassLoader" privateLibraryRef="ecmTaskManagerLib" delegation="parentLast" apiTypeVisibility="spec, ibm-api, third-party" />
+        <application-bnd>
+            <security-role name="TaskAdmins">
+                <group name="p8admins" />
+                <user name="p8admin" />
+            </security-role>
+            <security-role name="TaskUsers">
+                <group name="p8users" />
+            </security-role>
+            <security-role name="TaskAuditors">
+                <group name="p8admins" />
+            </security-role>
+        </application-bnd>
+      </application>
+      <jaasLoginContextEntry id="Navigator" loginModuleRef="wsiLoginModule, hashtable, userNameAndPassword, certificate, token" name="Navigator"/>
+      <jaasLoginContextEntry id="FileNetP8WSI" loginModuleRef="wsiLoginModule, hashtable, userNameAndPassword, certificate, token" name="FileNetP8WSI"/>
+      <jaasLoginModule className="com.filenet.api.util.WSILoginModule" controlFlag="REQUIRED" id="wsiLoginModule" libraryRef="ecmTaskManagerLib"/>
+      <jaasLoginContextEntry id="FileNetP8" name="FileNetP8" loginModuleRef="wsiLoginModule, hashtable, userNameAndPassword, certificate, token"/>
+    </server>
+    
+  ier-library.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <server>
+      <library id="FileNetLib">
+        <fileset dir="${server.config.dir}/configDropins/overrides/ier-jars" includes="*.jar" scanInterval="5s" />
+      </library>
+    </server>  

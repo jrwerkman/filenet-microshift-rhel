@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: infra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: registry.redhat.io/rhel8/postgresql-16:1-44
+        imagePullPolicy: IfNotPresent
+        
+        env:
+        - name: POSTGRESQL_MAX_PREPARED_TRANSACTIONS
+          value: "100"
+        - name: POSTGRESQL_MAX_CONNECTIONS
+          value: "200"
+        - name: TZ
+          value: "Europe/Amsterdam"
+        - name: POSTGRESQL_USER
+          value: "admin"
+        - name: POSTGRESQL_PASSWORD
+          value: "Password1"
+        - name: POSTGRESQL_DATABASE
+          value: "db"
+          
+        ports:
+        - containerPort: 5432
+        
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/pgsql/data
+          
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+          
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc

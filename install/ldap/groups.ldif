@@ -1,0 +1,46 @@
+dn: cn=p8admins,ou=dev,dc=demodom,dc=nl
+changetype: add
+objectclass: groupOfNames
+objectclass: top
+cn: p8admins
+member: cn=p8admin,ou=dev,dc=demodom,dc=nl
+member: cn=admin,ou=dev,dc=demodom,dc=nl
+
+dn: cn=p8users,ou=dev,dc=demodom,dc=nl
+changetype: add
+objectclass: groupOfNames
+objectclass: top
+cn: p8users
+member: cn=p8admin,ou=dev,dc=demodom,dc=nl
+member: cn=p8user,ou=dev,dc=demodom,dc=nl
+member: cn=admin,ou=dev,dc=demodom,dc=nl
+member: cn=test,ou=dev,dc=demodom,dc=nl
+
+dn: cn=rmusers,ou=dev,dc=demodom,dc=nl
+changetype: add
+objectclass: groupOfNames
+objectclass: top
+cn: rmusers
+member: cn=p8user,ou=dev,dc=demodom,dc=nl
+
+dn: cn=rmprivusers,ou=dev,dc=demodom,dc=nl
+changetype: add
+objectclass: groupOfNames
+objectclass: top
+cn: rmprivusers
+member: cn=test,ou=dev,dc=demodom,dc=nl
+
+dn: cn=rmmanagers,ou=dev,dc=demodom,dc=nl
+changetype: add
+objectclass: groupOfNames
+objectclass: top
+cn: rmmanagers
+member: cn=p8admin,ou=dev,dc=demodom,dc=nl
+
+dn: cn=rmadmins,ou=dev,dc=demodom,dc=nl
+changetype: add
+objectclass: groupOfNames
+objectclass: top
+cn: rmadmins
+member: cn=p8admin,ou=dev,dc=demodom,dc=nl
+

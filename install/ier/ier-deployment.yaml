@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ier
+  namespace: filenet
+  labels:
+    app: ier
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ier
+  template:
+    metadata:
+      labels:
+        app: ier
+    spec:
+      imagePullSecrets:
+        - name: ibm-entitlement-key    
+        
+      serviceAccountName: default 
+      
+      containers:
+      - name: icn
+        image: cp.icr.io/cp/cp4a/ier/ier:ga-5218-if008-ier-2500
+        imagePullPolicy: "IfNotPresent"
+
+        ports:
+        - containerPort: 9080
+          name: http
+        - containerPort: 9443
+          name: https
+
+        securityContext:
+          capabilities:
+            drop: ["ALL"]
+          privileged: false
+          runAsUser: 1000140000
+          runAsNonRoot: true
+          readOnlyRootFilesystem: false
+          allowPrivilegeEscalation: false
+          seccompProfile:
+            type: RuntimeDefault
+        
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+            ephemeral-storage: "2Gi"
+          limits:
+            memory: "1536Mi"
+            cpu: "1"
+            ephemeral-storage: "2Gi"
+
+        env:
+        - name: LICENSE
+          value: accept
+        - name: LICENSEMODEL
+          value: FNCM.PVUNonProd
+        - name: PRODUCT
+          value: "NON_PROD"
+        - name: TZ
+          value: Europe/Amsterdam
+        - name: LOG_FORMAT
+          value: json
+        - name: disableFIPS
+          value: "true"
+
+        - name: JVM_INITIAL_HEAP_PERCENTAGE
+          value: '18'
+        - name: JVM_MAX_HEAP_PERCENTAGE
+          value: '33'
+        - name: DISABLE_BASIC_AUTH
+          value: 'true'
+
+        - name: IER_KEYSTORE_FILE
+          value: "/shared/tls/pkcs12/server.p12"
+        - name: IER_TRUSTSTORE_FILE
+          value: "/shared/tls/pkcs12/trusts.p12"
+        - name: TRUSTSTORE_TYPE
+          value: PKCS12
+        - name: KEYSTORE_TYPE
+          value: PKCS12  
+
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+
+        volumeMounts:
+        - name: ier-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/logs
+          subPath: logs
+
+        - name: tls-volume
+          mountPath: /shared/tls/pkcs12
+
+        - name: config-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_custom-ssl.xml
+          subPath: ibm_custom-ssl.xml
+
+      volumes:
+      - name: ier-volume
+        persistentVolumeClaim:
+          claimName: ier-pvc
+      - name: config-volume
+        configMap:
+          name: filenet-config
+      - name: tls-volume
+        configMap:
+          name: ier-tls-volume   

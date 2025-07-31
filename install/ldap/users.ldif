@@ -1,0 +1,61 @@
+dn: ou=dev,dc=demodom,dc=nl
+changetype: add
+objectClass: top
+objectClass: organizationalUnit
+ou: dev
+
+dn: cn=bindldap,ou=dev,dc=demodom,dc=nl
+changetype: add
+uid: bindldap
+cn: bindldap
+sn: bindldap
+userpassword: Password1
+objectclass: top
+objectclass: organizationalPerson
+objectclass: person
+objectClass: inetOrgPerson
+
+dn: cn=p8admin,ou=dev,dc=demodom,dc=nl
+changetype: add
+uid: p8admin
+cn: p8admin
+sn: p8admin
+userpassword: Password1
+objectclass: top
+objectclass: organizationalPerson
+objectclass: person
+objectClass: inetOrgPerson
+
+dn: cn=p8user,ou=dev,dc=demodom,dc=nl
+changetype: add
+uid: p8user
+cn: p8user
+sn: p8user
+userpassword: Password1
+objectclass: top
+objectclass: organizationalPerson
+objectclass: person
+objectClass: inetOrgPerson
+
+dn: cn=test,ou=dev,dc=demodom,dc=nl
+changetype: add
+uid: test
+cn: test
+sn: test
+userpassword: Password1
+objectclass: top
+objectclass: organizationalPerson
+objectclass: person
+objectClass: inetOrgPerson
+
+dn: cn=admin,ou=dev,dc=demodom,dc=nl
+changetype: add
+uid: admin
+cn: admin
+sn: admin
+userpassword: Password1
+objectclass: top
+objectclass: organizationalPerson
+objectclass: person
+objectClass: inetOrgPerson
+
