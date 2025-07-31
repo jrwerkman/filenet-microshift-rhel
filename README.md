@@ -396,11 +396,11 @@ Resolution: Follow the below steps
 1. Download the ier-library.xml file from GitHub https://github.com/ibm-ecm/ier-samples.
 2. Put the ier-jars.xml into ICN Container in the path (already in see configmap and icn-deployment file) /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides.
 3. In the same path i.e /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides, create a folder named "ier-jars" (auto created by the initContainer script)
-4. and copy and paste the xercesImpl.jar, xml.jar and xml-apis.jar from <ier_on-prem_installation>\API\JARM to the newly created "ier-jars" folder. 
+4. and copy and paste the xercesImpl.jar, xml.jar and xml-apis.jar from \<ier_on-prem_installation\>\API\JARM to the newly created "ier-jars" folder. 
 5. Restart the ICN pod and access IER Desktop.
 #### Fix Not using pod -_- (Only in case of problems)
 [https://www.ibm.com/support/pages/node/7097611](https://www.ibm.com/support/pages/node/7097611)   
-download: https://<hostname>/EnterpriseRecordsPlugin/IERApplicationPlugin.jar   
+download: https://\<hostname\>/EnterpriseRecordsPlugin/IERApplicationPlugin.jar   
 copy downloaded plugin to the navigator plugin folder (should be in volume)   
 load plugin: /opt/ibm/plugins/IERApplicationPlugin.jar   
 restart icn: `oc delete pods -n filenet <icn-pod-name>`   
@@ -422,12 +422,12 @@ oc apply -f ~/install/routes/routes.yaml -n filenet
 ```
 
 After the routes are installed you should be able to access the following links   
-- https://<hostname>/navigator
-- https://<hostname>/acce
-- https://<hostname>/content-services-graphql
-- https://<hostname>/taskManagerWeb/api/v1
-- https://<hostname>/FileNet/Engine
-- https://<hostname>/wsi/FNCEWS40MTOM
+- https://\<hostname\>/navigator
+- https://\<hostname\>/acce
+- https://\<hostname\>/content-services-graphql
+- https://\<hostname\>/taskManagerWeb/api/v1
+- https://\<hostname\>/FileNet/Engine
+- https://\<hostname\>/wsi/FNCEWS40MTOM
    
 There are more link, so study the routes.yaml :P   
 
