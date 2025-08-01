@@ -103,9 +103,6 @@ spec:
           mountPath: /opt/ibm/wlp/usr/servers/defaultServer/logs
           subPath: logs
         - name: tm-volume
-          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides
-          subPath: configDropins/overrides
-        - name: tm-volume
           mountPath: /opt/ibm/extTM
           subPath: pluginstore
           

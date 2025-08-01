@@ -100,9 +100,6 @@ spec:
           mountPath: /opt/ibm/wlp/usr/servers/defaultServer/FileNet
           subPath: FileNet
         - name: cpe-volume
-          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides
-          subPath: configDropins/overrides
-        - name: cpe-volume
           mountPath: /opt/ibm/wlp/usr/servers/defaultServer/lib/bootstrap
           subPath: bootstrap
           

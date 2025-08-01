@@ -95,9 +95,6 @@ spec:
         - name: graphql-volume
           mountPath: /opt/ibm/wlp/usr/servers/defaultServer/logs
           subPath: logs
-        - name: graphql-volume
-          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides
-          subPath: configDropins/overrides
 
         - name: tls-volume
           mountPath: /shared/tls/pkcs12

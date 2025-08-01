@@ -118,9 +118,6 @@ spec:
           mountPath: /opt/ibm/Aspera
           subPath: aspera
         - name: icn-volume
-          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides
-          subPath: configDropins/overrides
-        - name: icn-volume
           mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ier-jars
           subPath: configDropins/overrides/ier-jars
         
