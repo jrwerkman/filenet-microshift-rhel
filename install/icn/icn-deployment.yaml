@@ -32,6 +32,53 @@ spec:
         seccompProfile:
           type: RuntimeDefault
 
+      initContainers:
+      - name: fix-permissions
+        image: cp.icr.io/cp/cp4a/ban/navigator:ga-320-icn
+        command:
+        - sh
+        - -c
+        - |
+          cp -r /shared/overrides/* /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/
+        volumeMounts:
+        - name: icn-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides
+          subPath: configDropins/overrides
+
+        - name: config-volume
+          mountPath: /shared/overrides/ibm_ldap_custom_default1.xml
+          subPath: ibm_ldap_custom_default1.xml
+        - name: config-volume
+          mountPath: /shared/overrides/ibm_ldap_external.xml
+          subPath: ibm_ldap_external.xml
+        - name: config-volume
+          mountPath: /shared/overrides/ibm_ldap_federated_incl_ext.xml
+          subPath: ibm_ldap_federated_incl_ext.xml
+        - name: config-volume
+          mountPath: /shared/overrides/PostgreSQLJDBCDriver.xml
+          subPath: PostgreSQLJDBCDriver.xml
+        - name: config-volume
+          mountPath: /shared/overrides/http-session.xml
+          subPath: http-session.xml
+        - name: config-volume
+          mountPath: /shared/overrides/ier-library.xml
+          subPath: ier-library.xml
+        - name: config-volume
+          mountPath: /shared/overrides/ibm_CORS.xml
+          subPath: ibm_CORS.xml
+        - name: config-volume
+          mountPath: /shared/overrides/ibm_custom-ssl.xml
+          subPath: ibm_custom-ssl.xml
+        - name: config-volume
+          mountPath: /shared/overrides/ibm_custom-ltpa.xml
+          subPath: ibm_custom-ltpa.xml
+        - name: config-volume
+          mountPath: /shared/overrides/ibm_ICNDS.xml
+          subPath: ibm_ICNDS.xml
+        - name: config-volume
+          mountPath: /shared/overrides/ibm_icn_mail.xml
+          subPath: ibm_icn_mail.xml      
+
       containers:
       - name: icn
         image: cp.icr.io/cp/cp4a/ban/navigator:ga-320-icn
@@ -118,9 +165,7 @@ spec:
         - name: icn-volume
           mountPath: /opt/ibm/Aspera
           subPath: aspera
-        - name: icn-volume
-          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides
-          subPath: configDropins/overrides
+
         - name: icn-volume
           mountPath: /shared/ier-jars
           subPath: ier-jars
@@ -128,46 +173,16 @@ spec:
         - name: tls-volume
           mountPath: /shared/tls/pkcs12
 
-        # config volumes
-        - name: config-volume
-          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/defaults/ibm_ldap_custom_default1.xml
-          subPath: ibm_ldap_custom_default1.xml
-        - name: config-volume
-          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/defaults/ibm_ldap_federated.xml
-          subPath: ibm_ldap_federated.xml
+        - name: icn-volume
+          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides
+          subPath: configDropins/overrides
 
-        - name: config-volume
-          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/defaults/PostgreSQLJDBCDriver.xml
-          subPath: PostgreSQLJDBCDriver.xml
-        - name: config-volume
-          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/defaults/http-session.xml
-          subPath: http-session.xml
-        - name: config-volume
-          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/defaults/ier-library.xml
-          subPath: ier-library.xml
-        - name: config-volume
-          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/defaults/ibm_CORS.xml
-          subPath: ibm_CORS.xml
         - name: config-volume
           mountPath: /opt/ibm/wlp/usr/servers/defaultServer/resources/security/environment.properties
           subPath: environment_icn.properties
         - name: config-volume
-          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/defaults/ibm_custom-ssl.xml
-          subPath: ibm_custom-ssl.xml
-        - name: config-volume
-          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/defaults/ibm_custom-ltpa.xml
-          subPath: ibm_custom-ltpa.xml
-        - name: config-volume
           mountPath: /opt/ibm/wlp/usr/servers/defaultServer/resources/security/custom-ltpa.keys
           subPath: custom-ltpa.keys
-
-        - name: config-volume
-          mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/defaults/ibm_ICNDS.xml
-          subPath: ibm_ICNDS.xml
-        # for mail config, enable and edit ibm_icn_mail.xml in configmap
-        #- name: config-volume
-        #  mountPath: /opt/ibm/wlp/usr/servers/defaultServer/configDropins/overrides/ibm_icn_mail.xml
-        #  subPath: ibm_icn_mail.xml
 
       volumes:
       - name: icn-volume
