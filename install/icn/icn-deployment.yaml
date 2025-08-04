@@ -49,11 +49,8 @@ spec:
           mountPath: /shared/overrides/ibm_ldap_custom_default1.xml
           subPath: ibm_ldap_custom_default1.xml
         - name: config-volume
-          mountPath: /shared/overrides/ibm_ldap_external.xml
-          subPath: ibm_ldap_external.xml
-        - name: config-volume
-          mountPath: /shared/overrides/ibm_ldap_federated_incl_ext.xml
-          subPath: ibm_ldap_federated_incl_ext.xml
+          mountPath: /shared/overrides/ibm_ldap_federated.xml
+          subPath: ibm_ldap_federated.xml
         - name: config-volume
           mountPath: /shared/overrides/PostgreSQLJDBCDriver.xml
           subPath: PostgreSQLJDBCDriver.xml
